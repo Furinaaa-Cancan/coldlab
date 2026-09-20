@@ -5,3 +5,5 @@
 在线打开：<https://furinaaa-cancan.github.io/coldlab/>
 
 本仓库只包含发布用的 `index.html`（内含 MIT 授权的 Three.js r140，见文件头部的第三方声明）。
+
+灵感来源：ICQR Magic Tree（<https://tree.icqr.com>）。本页面为独立实现，未使用其代码或素材。
