@@ -54,6 +54,24 @@ body{--outro-ui:0;--outro-peripheral:1;--outro-offset:10px}
 .brand:hover{opacity:.8}
 @media(max-width:1150px) and (min-width:801px){.station-tab{padding:5px 7px 6px;min-width:40px}.station-manual{margin-left:6px;padding:7px 8px}}
 @media(max-width:800px){.stations{gap:1px}.station-tab{padding:4px 5px 5px;gap:4px;font-size:7px;min-width:0;letter-spacing:.5px}.station-tab b{font-size:7px}.station-manual{margin-left:4px;font-size:7px;padding:5px 6px;letter-spacing:.3px}}
+
+/* v14.1: drawn icons instead of arrow glyphs; phone layout fixes. */
+.icon{width:14px;height:14px;flex-shrink:0;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-left:6px}
+.primary .icon{width:16px;height:16px;margin-left:0}
+#play-icon{display:flex;align-items:center}
+.text-button .icon{margin:0 4px 0 0;width:12px;height:12px;vertical-align:-2px}
+.manual-continue .icon{margin-left:7px;width:13px;height:13px}
+.batch-item .icon{width:11px;height:11px;margin-left:4px}
+.step-name-row>span:first-child .icon{width:22px;height:22px;stroke-width:1.5;margin:0;vertical-align:-4px;color:#8fa07a}
+@media(max-width:800px){
+ .actions{flex-direction:row;align-items:center;justify-content:flex-end;gap:10px;min-height:0}
+ .actions #preview{position:static;order:-1;padding:8px 6px;font-size:9px}
+ .actions #preview[hidden]{display:none!important}
+ .station-panel{top:70px}
+ .manual-mode .stage{top:var(--manual-panel-bottom,181px)}
+ .manual-mode .world-caption{display:none}
+}
+@media(max-width:800px) and (max-height:750px){.manual-mode .work-bottom{display:none}.manual-mode .stage{bottom:8px}}
 </style><!--
 Three.js r140 (offline preview runtime)
 Copyright 2010-2022 Three.js Authors
@@ -94,7 +112,7 @@ Valley source code, models, sprites, fonts, music or other game assets are used.
 <main class="layout">
 <aside class="sidebar"><div class="menu-heading"><span class="eyebrow">THE RECIPE BOOK</span><h2>今天，做点什么？</h2><p>选一份配方，慢慢做。</p></div><div class="filters" role="group" aria-label="配方类别"><button class="filter active" data-filter="all" aria-pressed="true">全部</button><button class="filter" data-filter="shake" aria-pressed="false">奶昔</button><button class="filter" data-filter="ice" aria-pressed="false">冰淇淋</button></div><div id="recipes" class="recipes" aria-label="可选配方"></div><section class="collection"><div class="collection-heading"><span class="collection-title">成品展示架 <small id="tray-count">0 / 4</small></span><span id="batch-count" title="本次打开页面后的累计出品数">00</span></div><p class="collection-meta">右后角四格 · 只展示最近四份</p><div id="batch-list" class="batch-list"><p>展示架还空着。先做第一份吧。</p></div></section><div class="sidebar-foot"><span class="little-square"></span> SMALL BATCH. LITTLE JOYS.</div></aside>
 <section class="workspace" aria-label="制作工作台">
-<div class="workspace-top"><div><div class="recipe-kicker" id="recipe-english">AVOCADO / MILK</div><h1 id="recipe-name">牛油果奶昔</h1></div><div class="stations" role="group" aria-label="工位"><button class="station-tab on" data-station="0" type="button"><b>01</b><span>备料</span></button><button class="station-tab" data-station="1" type="button"><b>02</b><span>搅打</span></button><button class="station-tab" data-station="2" type="button"><b>03</b><span>制冷</span></button><button class="station-tab" data-station="3" type="button"><b>04</b><span>出品</span></button><button id="blend-station" class="station-manual" type="button" disabled aria-label="进入搅拌机手动工位" title="接管搅拌机，按安全顺序手动操作">手动工位 ↗</button><button id="cold-station" class="station-manual" type="button" disabled hidden aria-label="进入制冷机手动工位" title="接管制冷机，按安全顺序手动操作">手动工位 ↗</button></div></div>
+<div class="workspace-top"><div><div class="recipe-kicker" id="recipe-english">AVOCADO / MILK</div><h1 id="recipe-name">牛油果奶昔</h1></div><div class="stations" role="group" aria-label="工位"><button class="station-tab on" data-station="0" type="button"><b>01</b><span>备料</span></button><button class="station-tab" data-station="1" type="button"><b>02</b><span>搅打</span></button><button class="station-tab" data-station="2" type="button"><b>03</b><span>制冷</span></button><button class="station-tab" data-station="3" type="button"><b>04</b><span>出品</span></button><button id="blend-station" class="station-manual" type="button" disabled aria-label="进入搅拌机手动工位" title="接管搅拌机，按安全顺序手动操作">手动工位<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.4M8.6 4.2 12.4 8l-3.8 3.8"/></svg></button><button id="cold-station" class="station-manual" type="button" disabled hidden aria-label="进入制冷机手动工位" title="接管制冷机，按安全顺序手动操作">手动工位<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.4M8.6 4.2 12.4 8l-3.8 3.8"/></svg></button></div></div>
 
 <div id="station-panel" class="station-panel" hidden aria-live="polite">
   <div class="station-panel-head"><span>STATION 03 · COLD UNIT</span><button id="manual-exit" type="button">退出工位 ×</button></div>
@@ -106,7 +124,7 @@ Valley source code, models, sprites, fonts, music or other game assets are used.
     <button id="manual-close" type="button" disabled><b>03</b><span>合上上盖</span></button>
     <button id="manual-start" type="button" disabled><b>04</b><span>启动制冷</span></button>
   </div>
-  <button id="manual-continue" class="manual-continue" type="button" hidden>交回自动出品 ↗</button>
+  <button id="manual-continue" class="manual-continue" type="button" hidden>交回自动出品<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12.6 4.4v2.4a2.6 2.6 0 0 1-2.6 2.6H3.6"/><path d="M6.4 6.6 3.6 9.4l2.8 2.8"/></svg></button>
 </div>
 <div id="blend-panel" class="station-panel blend-panel" hidden aria-live="polite">
   <div class="station-panel-head"><span>STATION 02 · BLENDER</span><button id="blend-exit" type="button">退出工位 ×</button></div>
@@ -120,13 +138,13 @@ Valley source code, models, sprites, fonts, music or other game assets are used.
     <button id="blend-stop" type="button" disabled><b>05</b><span>停机稳住</span></button>
     <button id="blend-pour" type="button" disabled><b>06</b><span>开盖 · 倒出</span></button>
   </div>
-  <button id="blend-continue" class="manual-continue" type="button" hidden>交回自动收尾 ↗</button>
+  <button id="blend-continue" class="manual-continue" type="button" hidden>交回自动收尾<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12.6 4.4v2.4a2.6 2.6 0 0 1-2.6 2.6H3.6"/><path d="M6.4 6.6 3.6 9.4l2.8 2.8"/></svg></button>
 </div>
 <div id="stage" class="stage"><div id="loading" class="loading">工作台准备中…</div></div><span class="world-caption" id="world-caption">拖动工作台 · 360° 环视</span>
-<div class="work-bottom"><div class="step-copy"><div class="step-name-row"><span id="stage-number">01</span><h3 id="stage-name">原果</h3><span id="run-state" class="run-state">等待开工</span></div><p id="stage-note">一颗饱满的牛油果，刚刚好。</p><div id="ingredients" class="ingredients"></div></div><div class="actions"><button id="surprise" class="secondary" hidden>还有一个小惊喜 ↗</button><button id="play" class="primary"><span id="play-label">开始制作</span><span id="play-icon" aria-hidden="true">↗</span></button><button id="preview" class="preview">看成品</button></div></div>
+<div class="work-bottom"><div class="step-copy"><div class="step-name-row"><span id="stage-number">01</span><h3 id="stage-name">原果</h3><span id="run-state" class="run-state">等待开工</span></div><p id="stage-note">一颗饱满的牛油果，刚刚好。</p><div id="ingredients" class="ingredients"></div></div><div class="actions"><button id="surprise" class="secondary" hidden>还有一个小惊喜<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.4M8.6 4.2 12.4 8l-3.8 3.8"/></svg></button><button id="play" class="primary"><span id="play-label">开始制作</span><span id="play-icon" aria-hidden="true"></span></button><button id="preview" class="preview">看成品</button></div></div>
 <form id="url-form" class="url-panel" hidden><label for="destination">让这个入口，通往你的主页</label><div class="url-row"><input id="destination" type="url" value="https://furinaaa-cancan.github.io/rem-lab/" aria-label="二维码目标网址" spellcheck="false" required><button id="apply" type="submit">替换</button><button id="save-code" type="button">保存</button></div><p id="demo-note">当前指向这个页面本身：扫一扫，就能在手机上打开它。</p><p id="url-error" role="alert"></p></form>
 </section></main>
-<footer class="footer"><div class="transport"><button id="reset" class="text-button" aria-label="重置当前制作">↺ 重置</button><div id="steps" class="steps" aria-label="制作步骤"></div><input id="timeline" type="range" min="0" max="35.9" step="0.01" value="0" aria-label="制作进度"><span id="clock">00 / 36s</span></div><div class="settings"><button id="speed" class="text-button" aria-pressed="false">0.5× 慢放</button><button id="motion" class="text-button" aria-pressed="true">震动 <span id="motion-state">开</span></button><button id="sound" class="text-button" aria-pressed="false">声音 <span id="sound-state">关</span></button><button id="quality" class="text-button" aria-pressed="false">画质 标准</button></div></footer>
+<footer class="footer"><div class="transport"><button id="reset" class="text-button" aria-label="重置当前制作"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12.9 6.6A5.1 5.1 0 1 0 13.1 9.2"/><path d="M13.2 3.2v3.4H9.8"/></svg>重置</button><div id="steps" class="steps" aria-label="制作步骤"></div><input id="timeline" type="range" min="0" max="35.9" step="0.01" value="0" aria-label="制作进度"><span id="clock">00 / 36s</span></div><div class="settings"><button id="speed" class="text-button" aria-pressed="false">0.5× 慢放</button><button id="motion" class="text-button" aria-pressed="true">震动 <span id="motion-state">开</span></button><button id="sound" class="text-button" aria-pressed="false">声音 <span id="sound-state">关</span></button><button id="quality" class="text-button" aria-pressed="false">画质 标准</button></div></footer>
 <div class="disclaimer">艺术化工序演示 · 非真实制作时长</div><div id="toast" class="toast" role="status" aria-live="polite"></div><noscript>这个交互工作台需要启用 JavaScript。</noscript><script>/**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -2190,6 +2208,13 @@ const host = el('stage'), slider = el('timeline');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 let recipe = getRecipe('avocado'), steps = recipeSteps(recipe), filter = 'all', world;
 const state = { t: 0, running: false, recipe: 'avocado', speed: 1, motion: !reduced.matches, sound: false, lowQuality: false, orbit: 0, targetOrbit: 0, revealing: false, completed: 0, manualStation: false, manualKind: 'none', manualPhase: 'idle' };
+// One small icon set (16-unit grid, round caps); the static buttons carry the same drawings in template.html.
+const ICON = {
+    play: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.2 3.3v9.4L12.6 8z" fill="currentColor" stroke="none"/></svg>',
+    pause: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.6 3.6v8.8M10.4 3.6v8.8"/></svg>',
+    restart: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M12.9 6.6A5.1 5.1 0 1 0 13.1 9.2"/><path d="M13.2 3.2v3.4H9.8"/></svg>',
+    arrow: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.4M8.6 4.2 12.4 8l-3.8 3.8"/></svg>',
+};
 const READY = 35.9, END = OUTRO.end;
 let endAt = READY, lastTime = performance.now(), lastStep = -1, dirty = true, lastUI = 0, counted = false;
 let dragging = false, startX = 0, startOrbit = 0, motionOverride = false, audio = null, osc = null, gain = null;
@@ -2256,6 +2281,11 @@ function syncManualControls() {
     coldPanel.hidden = !activeCold;
     blendPanel.hidden = !activeBlend;
     document.body.classList.toggle('manual-mode', active);
+    const openPanel = activeCold ? coldPanel : activeBlend ? blendPanel : null;
+    if (openPanel) {
+        const w = host.parentElement.getBoundingClientRect(), p = openPanel.getBoundingClientRect();
+        document.body.style.setProperty('--manual-panel-bottom', `${Math.round(p.bottom - w.top) + 8}px`);
+    }
     if (activeCold) {
         const notes = { closed: '上盖关闭。先打开料槽，才能加入原料。', open: '上盖已经完全移开。现在可以加入乳基底与风味原料。', loaded: '原料已经进入料槽。先合上上盖，机器才允许启动。', sealed: '上盖已合稳。安全条件满足，可以启动制冷搅拌。', churned: '制冷搅拌已经停稳。把流程交回工作台，继续接料与出品。' };
         el('manual-note').textContent = state.running ? '动作进行中，请等器具停稳。' : notes[state.manualPhase] ?? '';
@@ -2515,7 +2545,7 @@ function updateUI() {
     el('surprise').hidden = !ready;
     el('preview').hidden = ready || state.revealing;
     el('play-label').textContent = state.running ? '暂停片刻' : state.t >= endAt - .001 ? '再做一份' : state.t > .01 ? '继续制作' : '开始制作';
-    el('play-icon').textContent = state.running ? 'Ⅱ' : state.t >= endAt - .001 ? '↻' : '↗';
+    el('play-icon').innerHTML = state.running ? ICON.pause : state.t >= endAt - .001 ? ICON.restart : ICON.play;
     el('play').setAttribute('aria-label', state.running ? '暂停制作' : '开始或继续制作');
     slider.max = String(END);
     slider.value = String(state.t);
@@ -2525,7 +2555,10 @@ function updateUI() {
     while (index > 0 && state.t < steps[index].start)
         index--;
     if (index !== lastStep || state.revealing) {
-        el('stage-number').textContent = state.revealing ? '↗' : String(index + 1).padStart(2, '0');
+        if (state.revealing)
+            el('stage-number').innerHTML = ICON.arrow;
+        else
+            el('stage-number').textContent = String(index + 1).padStart(2, '0');
         el('stage-name').textContent = code ? '新的入口' : state.revealing ? '再换个角度' : steps[index].name;
         el('stage-note').textContent = code ? '刚才的食材和器具方块，组成了一个真正的二维码。' : state.revealing ? '那些小方块，正在去往新的位置。' : steps[index].note;
         document.querySelectorAll('[data-station]').forEach(e => e.classList.toggle('on', Number(e.dataset.station) === steps[index].station && !state.revealing));
@@ -2547,7 +2580,7 @@ function syncCollection() {
     state.completed = batches.length;
     el('batch-count').textContent = String(state.completed).padStart(2, '0');
     el('tray-count').textContent = `${shelf.length} / ${TRAY_CAPACITY}`;
-    el('batch-list').innerHTML = batches.length ? batches.slice(-5).map((r, i) => `<button class="batch-item" data-batch="${i}">${r.name} ↗</button>`).join('') : '<p>展示架还空着。先做第一份吧。</p>';
+    el('batch-list').innerHTML = batches.length ? batches.slice(-5).map((r, i) => `<button class="batch-item" data-batch="${i}">${r.name}${ICON.arrow}</button>`).join('') : '<p>展示架还空着。先做第一份吧。</p>';
     document.querySelectorAll('[data-batch]').forEach((b, i) => b.addEventListener('click', () => { selectRecipe(batches.slice(-5)[i].id); seek(READY); }));
     world.setShelf(shelf.map(x => x.id));
     dirty = true;
@@ -2625,6 +2658,10 @@ try {
         canvas.releasePointerCapture(e.pointerId); updateUI(); });
     canvas.addEventListener('pointercancel', () => dragging = false);
     window.addEventListener('resize', () => { world.resize(); keepSelectedRecipeVisible(); dirty = true; });
+    // The stage box also changes without a window resize (manual panels on phones, side panel on
+    // desktop). Re-fit the renderer whenever it does, instead of letting CSS stretch the canvas.
+    if ('ResizeObserver' in window)
+        new ResizeObserver(() => { world.resize(); dirty = true; }).observe(host);
     window.addEventListener('keydown', e => { if (['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'].includes(e.target?.tagName))
         return; if (e.code === 'Space') {
         e.preventDefault();
